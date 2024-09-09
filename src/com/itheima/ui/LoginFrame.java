@@ -13,6 +13,10 @@ public class LoginFrame extends JFrame {
     private static final long serialVersionUID = 1L;
 
     public LoginFrame() {
+        createAndShowGUI();
+        setVisible(true);
+    }
+    private void createAndShowGUI() {
 
         // 设置窗口大小
         setSize(400, 300);
@@ -89,7 +93,6 @@ public class LoginFrame extends JFrame {
         // 添加主面板到窗口
         add(mainPanel);
 
-
         resetButton.addActionListener(e -> {
             JTextField usernameField = (JTextField) usernamePanel.getComponent(1);
             JPasswordField passwordField = (JPasswordField) passwordPanel.getComponent(1);
@@ -99,6 +102,7 @@ public class LoginFrame extends JFrame {
         });
     }
 
+    // 创建包含标签和输入框的JPanel
     private JPanel createLabelAndFieldPanel(String labelText, JComponent field) {
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
         panel.setOpaque(false); // 不显示背景色
@@ -126,7 +130,7 @@ public class LoginFrame extends JFrame {
 
         return panel;
     }
-
+    //哈希密码
     private String hashPassword(String password) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
