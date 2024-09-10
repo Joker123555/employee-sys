@@ -1,21 +1,38 @@
 package com.itheima.ui;
 
+import com.itheima.ui.bean.User;
+
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 
-public class LoginFrame extends JFrame {
-    private JPanel usernamePanel;// 用户名输入框
-    private  JPanel passwordPanel;// 密码输入框
+
+public class LoginFrame extends JFrame implements ActionListener {
+    private JTextField   loginNameField;// 用户名输入框
+    private JPasswordField passwordField;// 密码输入框
     private JButton loginButton;
-    private JButton resetButton;
-    private static final long serialVersionUID = 1L;
+    //注册按钮
+    private JButton registerButton;
+
+
+    private static ArrayList<User> allUsers = new ArrayList<>();
+
+    //初始化几个用户
+    static {
+        allUsers.add(new User("超级管理员", "123456", "admin"));
+        allUsers.add(new User("lijin", "lijin520", "lij"));
+        allUsers.add(new User("韩珂欣", "hkxin520", "hanke"));
+    }
 
     public LoginFrame() {
         createAndShowGUI();
         setVisible(true);
     }
+
     private void createAndShowGUI() {
 
         // 设置窗口大小
@@ -53,23 +70,26 @@ public class LoginFrame extends JFrame {
         gbc.fill = GridBagConstraints.BOTH;
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
-        JPanel formPanel = new JPanel(new GridLayout(3, 1, 10, 10)); // 3行1列，垂直间距为10
+        //创建一个面板，表单2行2列
+        //将用户名和密码放到两行上
+        JPanel formPanel = new JPanel(new GridLayout(3, 1, 10, 10)); // 垂直间距为10
         formPanel.setOpaque(false); // 不显示背景色
+        //在输入框前面添加用户名字样
 
-        // 添加用户名和密码输入框
-        usernamePanel = createLabelAndFieldPanel("用户名:", new JTextField(20));
-        passwordPanel = createLabelAndFieldPanel("密  码:", new JPasswordField(20));
 
-        // 添加到表单面板
-        formPanel.add(usernamePanel);
-        formPanel.add(passwordPanel);
+        // 创建登录名和密码输入框
+        loginNameField = new JTextField( 16);
+        passwordField = new JPasswordField(16);
+
+        formPanel.add(createLabelAndFieldPanel("用户名:", loginNameField));
+        formPanel.add(createLabelAndFieldPanel("密  码:", passwordField));
+
 
         // 创建按钮面板
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
         buttonPanel.setOpaque(false); // 不显示背景色
-
         loginButton = new JButton("登录");
-        resetButton = new JButton("注册");
+        registerButton = new JButton("注册");
 
         // 设置按钮的字体和颜色
         Font font = new Font("黑体", Font.BOLD, 16);
@@ -77,12 +97,16 @@ public class LoginFrame extends JFrame {
         loginButton.setBackground(Color.decode("#4CAF50")); // 绿色
         loginButton.setForeground(Color.WHITE);
 
-        resetButton.setFont(font);
-        resetButton.setBackground(Color.decode("#FF5722")); // 橙红色
-        resetButton.setForeground(Color.WHITE);
+        registerButton.setFont(font);
+        registerButton.setBackground(Color.decode("#FF5722")); // 橙红色
+        registerButton.setForeground(Color.WHITE);
 
         buttonPanel.add(loginButton);
-        buttonPanel.add(resetButton);
+        //为登录按钮添加事件监听器
+        loginButton.addActionListener(this);
+        buttonPanel.add(registerButton);
+        //为注册按钮添加事件监听器
+        registerButton.addActionListener(this);
 
         // 添加按钮面板到表单面板
         formPanel.add(buttonPanel);
@@ -93,13 +117,6 @@ public class LoginFrame extends JFrame {
         // 添加主面板到窗口
         add(mainPanel);
 
-        resetButton.addActionListener(e -> {
-            JTextField usernameField = (JTextField) usernamePanel.getComponent(1);
-            JPasswordField passwordField = (JPasswordField) passwordPanel.getComponent(1);
-            usernameField.setText("");
-            passwordField.setText("");
-            usernameField.requestFocus(); // 让用户名输入框获得焦点
-        });
     }
 
     // 创建包含标签和输入框的JPanel
@@ -130,21 +147,77 @@ public class LoginFrame extends JFrame {
 
         return panel;
     }
-    //哈希密码
-    private String hashPassword(String password) {
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(password.getBytes());
-            StringBuilder hexString = new StringBuilder();
-            for (byte b : hash) {
-                String hex = Integer.toHexString(0xff & b);
-                if (hex.length() == 1) hexString.append('0');
-                hexString.append(hex);
-            }
-            return hexString.toString();
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("Error hashing password", e);
+
+//    //哈希密码
+//    private String hashPassword(String password) {
+//        try {
+//            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+//            byte[] hash = digest.digest(password.getBytes());
+//            StringBuilder hexString = new StringBuilder();
+//            for (byte b : hash) {
+//                String hex = Integer.toHexString(0xff & b);
+//                if (hex.length() == 1) hexString.append('0');
+//                hexString.append(hex);
+//            }
+//            return hexString.toString();
+//        } catch (NoSuchAlgorithmException e) {
+//            throw new RuntimeException("Error hashing password", e);
+//        }
+//    }
+
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        //这里有登录和注册两个按钮
+        //需要判断出来是登录还是注册
+        JButton btn = (JButton) e.getSource();
+        if (btn == loginButton) {
+            //如果是登陆按钮
+            //独立功能，独立方法
+            login();
+        } else {
+            //如果是注册按钮
+            System.out.println("注册过来的。。");
         }
+    }
+
+    private void login() {
+        //1.获取用户输入的用户名和密码
+        String loginName = loginNameField.getText();
+        String password = new String(passwordField.getPassword());
+        //2.遍历集合，判断用户名密码是否匹配，如果匹配，则登录成功，否则登录失败
+        User user = findUserByLoginName(loginName);
+        if (user != null) {
+            //3.判断密码是否匹配
+            if (user.getPassword().equals(password)) {
+                //登录成功
+                JOptionPane.showMessageDialog(this, "登录成功");
+                //跳转到主界面
+                //创建主界面
+                EmployeeManager employeeManager = new EmployeeManager();
+                //设置主界面可见
+                employeeManager.setVisible(true);
+                //关闭当前登录界面
+                this.dispose();
+            } else {
+                //登录失败
+                JOptionPane.showMessageDialog(this, "密码错误");
+            }
+
+        } else {
+            JOptionPane.showMessageDialog(this, "用户不存在");
+        }
+    }
+
+    //根据登录名称查找用户对象，如果找到，返回用户对象，否则返回null,用for循环根据索引遍历
+    private User findUserByLoginName(String loginName) {
+        for (int i = 0; i < allUsers.size(); i++) {
+            User user = allUsers.get(i);
+            if (user.getLoginName().equals(loginName)) {
+                return user;
+            }
+        }
+        return null;
     }
 
 
