@@ -6,7 +6,6 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.SimpleDateFormat;
@@ -82,7 +81,7 @@ public class EmployeeManager extends JFrame {
 
         addButton.addActionListener(e-> {
             //创建一个新的窗口添加员工信息
-            new AddEmployeeDialog().setVisible(true);
+            new AddEmployeeDialog(this).setVisible(true);
         });
 
 
@@ -99,7 +98,7 @@ public class EmployeeManager extends JFrame {
         JMenuItem deleteItem = new JMenuItem("删除");
 
         editItem.addActionListener(this::editAction);
-        deleteItem.addActionListener(this::deleteAction);
+        deleteItem.addActionListener(this::deleteAction); // 直接引用方法
 
         popupMenu.add(editItem);
         popupMenu.add(deleteItem);
@@ -110,7 +109,9 @@ public class EmployeeManager extends JFrame {
                 if (e.isPopupTrigger()) {
                     int row = table.rowAtPoint(e.getPoint());
                     if (row != -1) {
+                        // 选中当前行
                         table.setRowSelectionInterval(row, row);
+                        // 显示右键菜单
                         popupMenu.show(table, e.getX(), e.getY());
                     }
                 }
@@ -119,9 +120,11 @@ public class EmployeeManager extends JFrame {
             @Override
             public void mouseReleased(MouseEvent e) {
                 if (e.isPopupTrigger()) {
+
                     int row = table.rowAtPoint(e.getPoint());
                     if (row != -1) {
                         table.setRowSelectionInterval(row, row);
+                        //popupMenu是弹出菜单，show方法会显示菜单
                         popupMenu.show(table, e.getX(), e.getY());
                     }
                 }
@@ -142,6 +145,7 @@ public class EmployeeManager extends JFrame {
             // 获取当前选中行的数据
             Object[] rowData = new Object[model.getColumnCount()];
             for (int i = 0; i < model.getColumnCount(); i++) {
+
                 rowData[i] = model.getValueAt(selectedRow, i);
             }
 
@@ -183,4 +187,10 @@ public class EmployeeManager extends JFrame {
         }
     }
 
+    public void addEmployee(Employee employee) {
+        //添加到集合
+        employees.add(employee);
+        //展示到表格
+        model.addRow(new Object[]{employee.getId(), employee.getName(), employee.getSex(), employee.getAge(), employee.getPhone(), employee.getPosition(), employee.getEntryDate(), employee.getSalary(), employee.getDepartment()});
+    }
 }
