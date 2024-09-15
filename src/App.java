@@ -1,4 +1,3 @@
-import com.itheima.ui.EmployeeManager;
 import com.itheima.ui.LoginFrame;
 
 public class App {

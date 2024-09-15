@@ -48,9 +48,6 @@ public class LoginFrame extends JFrame implements ActionListener {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10); // 内边距
 
-        // 设置主面板的背景色
-        mainPanel.setBackground(Color.decode("#F0F8FF")); // 淡蓝色背景
-
         // 添加标题
         gbc.gridy = 0; // 第一行
         gbc.gridx = 0; // 居中
@@ -73,13 +70,10 @@ public class LoginFrame extends JFrame implements ActionListener {
 
         // 创建表单面板
         JPanel formPanel = new JPanel(new GridLayout(3, 1, 10, 10)); // 垂直间距为10
-        formPanel.setOpaque(false); // 不显示背景色
         formPanel.setLayout(new BoxLayout(formPanel, BoxLayout.Y_AXIS)); // 使用 BoxLayout,
 
         // 创建用户名标签
         JLabel usernameLabel = new JLabel("用户名:");
-        usernameLabel.setOpaque(false); // 设置为不透明，使用父容器的背景色
-        usernameLabel.setBackground(Color.decode("#F0F8FF")); // 设置背景色
         usernameLabel.setFont(new Font("黑体", Font.PLAIN, 16));
         usernameLabel.setForeground(Color.decode("#333333"));
 
@@ -87,21 +81,27 @@ public class LoginFrame extends JFrame implements ActionListener {
         loginNameField = new JTextField(16);
         loginNameField.setFont(new Font("黑体", Font.PLAIN, 16));
         loginNameField.setForeground(Color.decode("#333333"));
-        loginNameField.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, Color.decode("#333333")), BorderFactory.createEmptyBorder(5, 10, 5, 10)));
+        loginNameField.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(Color.decode("#333333"), 1), // 外边框
+                BorderFactory.createEmptyBorder(5, 10, 5, 10) // 内边距
+        ));
+        loginNameField.setPreferredSize(new Dimension(100, loginNameField.getPreferredSize().height)); // 设置首选宽度为200像素
 
         // 创建密码标签
         JLabel passwordLabel = new JLabel("密  码:");
-        passwordLabel.setOpaque(false); // 设置为不透明，使用父容器的背景色
-        passwordLabel.setBackground(Color.decode("#F0F8FF"));
         passwordLabel.setFont(new Font("黑体", Font.PLAIN, 16));
         passwordLabel.setForeground(Color.decode("#333333"));
 
-        // 创建密码输入框
+       // 创建密码输入框
         passwordField = new JPasswordField(10);
-        passwordField.setFont(new Font("Dialog", Font.PLAIN, 16));
+        passwordField.setFont(new Font("黑体", Font.PLAIN, 16));
         passwordField.setForeground(Color.decode("#333333"));
         passwordField.setEchoChar('*'); // 显示星号
-        passwordField.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, Color.decode("#333333")), BorderFactory.createEmptyBorder(5, 10, 5, 10)));
+        passwordField.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(Color.decode("#333333"), 1), // 外边框
+                BorderFactory.createEmptyBorder(5, 10, 5, 10) // 内边距
+        ));
+        passwordField.setPreferredSize(new Dimension(100, passwordField.getPreferredSize().height)); // 设置首选宽度为200像素
 
         // 创建按钮面板
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 10));
@@ -143,8 +143,7 @@ public class LoginFrame extends JFrame implements ActionListener {
         labelFieldPanel.add(passwordPanel);
 
         labelFieldPanel.add(Box.createVerticalStrut(10)); // 下方留空隙
-        labelFieldPanel.setBackground(Color.decode("#F0F8FF"));
-        formPanel.setOpaque(false); // 不显示背景色
+
 
         buttonPanel.add(loginButton);
         // 为登录按钮添加事件监听器
@@ -166,22 +165,22 @@ public class LoginFrame extends JFrame implements ActionListener {
     }
 
 
-//    //哈希密码
-//    private String hashPassword(String password) {
-//        try {
-//            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-//            byte[] hash = digest.digest(password.getBytes());
-//            StringBuilder hexString = new StringBuilder();
-//            for (byte b : hash) {
-//                String hex = Integer.toHexString(0xff & b);
-//                if (hex.length() == 1) hexString.append('0');
-//                hexString.append(hex);
-//            }
-//            return hexString.toString();
-//        } catch (NoSuchAlgorithmException e) {
-//            throw new RuntimeException("Error hashing password", e);
-//        }
-//    }
+    //哈希密码
+    private String hashPassword(String password) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(password.getBytes());
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hash) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) hexString.append('0');
+                hexString.append(hex);
+            }
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("Error hashing password", e);
+        }
+    }
 
 
     @Override
