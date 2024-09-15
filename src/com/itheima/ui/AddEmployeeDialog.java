@@ -1,5 +1,7 @@
 package com.itheima.ui;
 
+import com.itheima.ui.bean.Employee;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
@@ -17,9 +19,10 @@ public class AddEmployeeDialog extends JFrame {
     private JTextField entryDateField;
     private JTextField salaryField;
     private JTextField departmentField;
+    private EmployeeManager employeeManager;
 
-    public AddEmployeeDialog() {
-
+    public AddEmployeeDialog(EmployeeManager employeeManager) {
+        this.employeeManager = employeeManager;
         initUI();
     }
     //初始化界面，提供很多输入框，
@@ -30,6 +33,7 @@ public class AddEmployeeDialog extends JFrame {
         // 设置窗口大小
         setSize(400, 500);
         setTitle("添加员工信息");
+
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null); // 设置窗口居中显示
 
@@ -160,6 +164,27 @@ public class AddEmployeeDialog extends JFrame {
         JButton addButton = new JButton("添加");
         JButton cancelButton = new JButton("取消");
 
+        //为添加按钮添加监听器
+        addButton.addActionListener(e -> {
+            //将员工的数据添加到集合中，在表格中展示
+            Employee employee = new Employee();
+            employee.setId(Integer.parseInt(idField.getText()));
+            employee.setName(nameField.getText());
+            employee.setSex(genderComboBox.getSelectedItem().toString());
+            employee.setAge(Integer.parseInt(ageField.getText()));
+            employee.setPhone(phoneField.getText());
+            employee.setPosition(positionField.getText());
+            employee.setEntryDate(entryDateField.getText());
+            employee.setSalary(salaryField.getText());
+            employee.setDepartment(departmentField.getText());
+            employeeManager.addEmployee(employee);
+
+            //显示添加成功的弹窗
+            JOptionPane.showMessageDialog(this, "添加成功");
+            //关闭当前窗口
+            this.dispose();
+        });
+
         // 设置按钮的字体和颜色
         Font font = new Font("黑体", Font.BOLD, 16);
         addButton.setFont(font);
@@ -173,9 +198,8 @@ public class AddEmployeeDialog extends JFrame {
         buttonPanel.add(cancelButton);
 
         // 为按钮添加事件监听器
-        addButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        addButton.addActionListener(e -> {
+            {
                 // 添加员工信息的逻辑
                 String id = idField.getText();
                 String name = nameField.getText();
@@ -190,20 +214,14 @@ public class AddEmployeeDialog extends JFrame {
                 // 验证输入是否为空
                 if (!id.isEmpty() && !name.isEmpty() && !gender.isEmpty() && !age.isEmpty() && !phone.isEmpty()
                         && !position.isEmpty() && !entryDate.isEmpty() && !salary.isEmpty() && !department.isEmpty()) {
-                    JOptionPane.showMessageDialog(AddEmployeeDialog.this, "员工信息已添加");
                     dispose(); // 关闭对话框
                 } else {
                     JOptionPane.showMessageDialog(AddEmployeeDialog.this, "请填写完整信息！");
                 }
             }
         });
-
-        cancelButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dispose(); // 关闭对话框
-            }
-        });
+        // 关闭对话框
+        cancelButton.addActionListener(e -> dispose());
 
         // 添加表单面板和按钮面板到主面板
         mainPanel.add(formPanel, BorderLayout.CENTER);
