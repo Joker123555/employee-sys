@@ -1,12 +1,16 @@
 package com.itheima.ui;
 
+import com.itheima.ui.bean.Employee;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class EmployeeManager extends JFrame {
@@ -17,13 +21,21 @@ public class EmployeeManager extends JFrame {
     private JButton searchButton;
     private JButton addButton;
 
+    //准备一个静态集合对象，用于存储员工信息
+    private static ArrayList<Employee> employees = new ArrayList<>();
+
+
     public EmployeeManager() {
+
+    }
+    public EmployeeManager(String username){
+        super("欢迎，"+username+"登录绿人行公司员工管理系统！");
         initializeUI();
         setVisible(true);
+
     }
 
     private void initializeUI() {
-        setTitle("员工信息管理系统");
         setSize(800, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
@@ -36,6 +48,7 @@ public class EmployeeManager extends JFrame {
 
         topPanel.add(searchField);
         topPanel.add(searchButton);
+        // 添加添加按钮
         topPanel.add(addButton);
 
         // 创建表格模型
@@ -65,13 +78,20 @@ public class EmployeeManager extends JFrame {
         addRightClickMenu();
 
         // 添加监听器
-        searchButton.addActionListener(this::searchAction);
-        addButton.addActionListener(this::addAction);
+        searchButton.addActionListener(e-> searchAction(e)); // 搜索功能
+
+        addButton.addActionListener(e-> {
+            //创建一个新的窗口添加员工信息
+            new AddEmployeeDialog().setVisible(true);
+        });
+
 
         // 添加组件到主面板
         add(topPanel, BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
     }
+
+
 
     private void addRightClickMenu() {
         JPopupMenu popupMenu = new JPopupMenu();
@@ -115,10 +135,6 @@ public class EmployeeManager extends JFrame {
         JOptionPane.showMessageDialog(this, "搜索关键词: " + searchText);
     }
 
-    private void addAction(ActionEvent e) {
-        // 在这里添加添加新员工的逻辑
-        JOptionPane.showMessageDialog(this, "添加新员工");
-    }
 
     private void editAction(ActionEvent e) {
         int selectedRow = table.getSelectedRow();
